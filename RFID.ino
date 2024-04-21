@@ -21,13 +21,14 @@ uint8_t presenceSensorRead = 8;
 uint8_t i=0;
 byte presenceSensorValue=0;
 byte prevPresenceSensorValue=0;
-uint8_t servoPos = 90;
+uint8_t servoPos = 50;
 
 bool isAuthorized = false;
 bool toRight = true;
 bool animeStart = true;
 bool cardRead = false;
 bool blinkLEDs = true;
+bool doorState = false;
 
 byte readCard[4];
 String tag_UID = "1392ABD";  // My UID for the TAG - We can create a list of multiple TAGs later on...
@@ -71,17 +72,17 @@ void loop() {
 
 void readSensor(){
   presenceSensorValue = digitalRead(presenceSensorRead)^1;
-
+  welcome();
   /*Object detection in close range...*/
-  if (presenceSensorValue == 1){
-    welcome();
-    animeStopTime = currentTime;
-    animeStart = false;
-    prevPresenceSensorValue = presenceSensorValue;
-  }
-  else {
-    animeStart = true;
-  }
+//  if (presenceSensorValue == 1){
+//    
+//    animeStopTime = currentTime;
+//    animeStart = false;
+//    prevPresenceSensorValue = presenceSensorValue;
+//  }
+//  else {
+//    animeStart = true;
+//  }
     
   ledBlinker(redLightPin);
   
@@ -250,15 +251,23 @@ boolean readID()
   }
 
 void opendoor(){
-  for (int i = 0; i < 65; i+=2){
-    servoPos +=i;
+  if (doorState == false){
+  for (int i = 0; i < 55; i+=1){
+    servoPos +=1;
     doorLock.write(servoPos);
+    delay(30);
+  }
+  doorState = true;
   }
 }
 
 void closeDoor(){
-  for (int i = 0; i < 65; i+=2){
-    servoPos -= i;
+  if (doorState == true){
+  for (int i = 0; i < 55; i+=1){
+    servoPos -= 1;
     doorLock.write(servoPos);
+    delay(30);
+  }
+  doorState = false;
   }
 }
